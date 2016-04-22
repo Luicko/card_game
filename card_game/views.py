@@ -74,7 +74,6 @@ def preparation():
 
 @app.route('/ready', methods=['GET', 'POST'])
 def ready():
-    import pickle
     player_list = request.form.getlist("add")
     set_game(CardGame(player_list))
     return redirect(url_for('playing'))

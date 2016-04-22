@@ -4,7 +4,9 @@ from wtforms import (StringField, PasswordField, validators)
 class AddPlayer(Form):
 	username = StringField('Username', validators=[validators.DataRequired()])
 	password = PasswordField('Password', 
-        [validators.Required()])
+		[validators.Required(), 
+		validators.EqualTo('confirm')])
+	confirm = PasswordField('Repeat Password')
 
 class LoginForm(Form):
     username = StringField('Username', validators=[
