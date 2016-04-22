@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import pickle
+from __future__ import print_function # In python 2.7
 
 from flask.ext.login import UserMixin
 
@@ -28,23 +28,21 @@ class Player(db.Model, UserMixin):
     @property
     def is_anonymous(self):
         return False
-
-    @property
-    def is_playing(self):
-        game = pickle.loads(session['game'])
-        for player in game.participants:
-            if player.player == self:
-                return self._is_playing
     
-    def play(card):
+    def play(self, game, card):
         for player in game.participants:
-            if player.player == self:
+            if player.player == self.username:
                 player.play(player.hand[card])
 
-    def draw():
+    def draw(self, game):
         for player in game.participants:
-            if player.player == self:
+            if player.player == self.username:
                 player.draw()
+
+    def hand(self, game):
+        for player in game.participants:
+            if player.player == self.username:
+                return player.hand   
     
     def __repr__(self):
         return '<User %r>' % (self.username)
@@ -54,13 +52,3 @@ class Game(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     game = db.Column(db.String(255))
-
-    """
-    def set_game(game):
-    game = game
-    game.start_game()
-    print (game, file=sys.stderr)
-    print (game.act_player.player, file=sys.stderr)
-    print (type(game), file=sys.stderr)
-    global game
-    """

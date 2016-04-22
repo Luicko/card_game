@@ -9,6 +9,7 @@
     </head>
     <body>
         {{ current_user.username }}
+        <a href="{{ url_for('logout') }}">Logout</a>
       {% block content %}
       {% endblock %}
     </body>

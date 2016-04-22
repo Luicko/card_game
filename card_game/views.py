@@ -13,6 +13,15 @@ from .forms import AddPlayer, LoginForm
 from engine import *
 from .models import Player, Game
 
+def set_game(games):
+    game = games
+    game.start_game()
+    global game
+
+def is_playing(user ,game):
+        for player in game.participants:
+            if player.player == user.username:
+                return True
 
 @app.route('/')
 @app.route('/index')
@@ -46,24 +55,32 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html', form=form, title='Sign In')
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for('index'))
+
 @app.route('/preparation', methods=['GET', 'POST'])
 def preparation():
     player_list = Player.query.all()
-    if current_user.is_playing:
-        return redirect('playing')
+    try:
+        if game:
+            if is_playing(current_user, game):
+                return redirect('playing')
+    except NameError:
+        pass
     return render_template('preparation.html', player_list=player_list)
 
 @app.route('/ready', methods=['GET', 'POST'])
 def ready():
     import pickle
     player_list = request.form.getlist("add")
-    session['game'] = pickle.dumps(CardGame(player_list))
+    set_game(CardGame(player_list))
     return redirect(url_for('playing'))
 
 @app.route('/playing')
 def playing():
-    import pickle
-    game = pickle.loads(session['game'])
     if game.winner == None:
         return render_template('playing.html', game=game)
     else:
@@ -71,10 +88,8 @@ def playing():
 
 @app.route('/play/<card>', methods=['POST', 'GET'])
 def play(card):
-    import pickle
-    game = pickle.loads(session['game'])
     try:
-        current_user.play(int(card))
+        current_user.play(game, int(card))
         return redirect(url_for('playing'))
     except ValueError as error:
         flash(str(error))
@@ -82,13 +97,9 @@ def play(card):
 
 @app.route('/draw')
 def draw():
-    import pickle
-    game = pickle.loads(session['game'])
-    current_user.draw()
+    current_user.draw(game)
     return redirect('/playing')
 
 @app.route('/winner')
 def winner():
-    import pickle
-    game = pickle.loads(session['game'])
     return render_template('winner.html', game=game)

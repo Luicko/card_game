@@ -58,7 +58,7 @@ class CardGame(object):
             self.last_player = self.act_player
             self.act_player = self.participants[self.turns]
             self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
-        if player == self.last_player or self.compare(other=card):
+        elif player == self.last_player or self.compare(other=card):
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
