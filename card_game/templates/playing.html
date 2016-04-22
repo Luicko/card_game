@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }} </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+<h3>Is {{ games.act_player.player }} turn</h3>
+<h3>This are the cards:</h3>
+{% for card in games.act_player.hand %}
+<a href="{{ url_for('play', card=games.act_player.hand.index(card)) }}">{{ games.show_card(card) }}</a><br>
+{% endfor %}
+
+<h3>Last card played was:</h3>
+{% if games.last_card_played %}
+{{ games.show_card(games.last_card_played) }} by {{ games.last_player.player }}
+{{ games.winner }}
+{% endif %}
+<h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
+{% endblock %}

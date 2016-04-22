@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action='' method='post'>
+  {{ form.hidden_tag() }}
+  Nickname: {{ form.username }}
+  Password: {{ form.password }}
+  <input type='submit' value='Login'/>
+</form>
+
+{% for player in players %}
+  {{ player.name }} <button class="algo" value='{{ player.name }}'> - </button>
+{% endfor %}
+
+<a href="{{ url_for('index') }}">Salir</a>
+
+{% endblock %}

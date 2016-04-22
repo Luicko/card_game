@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Choose the players that are going to participate</h3>
+<form action="{{ url_for('ready') }}" method="post">
+{% for player in player_list %}
+	{{ player.username }} <input type="checkbox" value="{{ player.username }}" name=add ></input><br>
+{% endfor %}
+With selected:
+<input type="submit" value="Add" />
+</form>
+{% endblock %}

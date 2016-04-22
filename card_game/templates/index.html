@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id='cssmenu'>
+	<ul>
+			<li class='active'><a href='{{ url_for("preparation") }}'><span>Start Game</span></a></li>
+			<li><a href='{{ url_for("regist") }}'><span>Add Players</span></a></li>
+			<li><a href='{{ url_for("login") }}'><span>Sign In</span></a></li>
+			<li class='last'><a href='#'><span>Score Table</span></a></li>
+		</ul>
+</div>
+{% endblock %}
