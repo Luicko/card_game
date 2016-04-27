@@ -7,14 +7,14 @@ POINTS_PER_GAME = 2
 
 class PlayerHand(object):
 
-    def __init__(self, player, cards, game):
+    def __init__(self, player, hand, game):
         self.player = player
         self.game = game
-        self.hand = cards
+        self.hand = hand
 
     def play(self, card):
         if card not in self.hand:
-            raise ValueError ('You don\'t have that card')
+            raise ValueError ("You don't have that card")
         self.game.play(player=self, card=card)
         self.hand.remove(card)
 
@@ -31,9 +31,9 @@ class CardGame(object):
     def __init__(self, players):
         self.participants = []
         self.winner = None
-        self.act_player = None
-        self.last_player = None
-        self.last_card_played = None
+        self.act_player = 0
+        self.last_player = 0
+        self.last_card_played = 0
         self.stock = Stock(ranks=len(self.ranks), values=len(self.values))
         self.deck = []
         self.turns = None
@@ -51,14 +51,14 @@ class CardGame(object):
 
     def play(self, player, card):
         if player != self.act_player:
-            raise ValueError ('It isn\'nt your turn')
+            raise ValueError ("It isn't your turn")
         if not self.last_card_played:
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
             self.act_player = self.participants[self.turns]
             self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
-        elif player == self.last_player or self.compare(other=card):
+        elif self.act_player == self.last_player or self.compare(other=card):
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
@@ -80,7 +80,8 @@ class CardGame(object):
         return draw
 
     def set_winner(self, player):
-        self.winner = player
+        self.winner = player.player
+        self.participants = []
 
     def show_card(self, card):
         return (self.values[card.value] +' - '+ self.ranks[card.rank])
@@ -93,6 +94,14 @@ class CardGame(object):
                 return 1
         else:
             return 0
+
+    def player_quit(self, user):
+        for player in self.participants:
+            if player.player == user:
+                if self.act_player == player:
+                    self.act_player = self.participants[self.turns]
+                self.participants.remove(player)
+                self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
 
 
 class Stock(object):

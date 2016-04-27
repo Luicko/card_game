@@ -33,11 +33,13 @@ class Player(db.Model, UserMixin):
         for player in game.participants:
             if player.player == self.username:
                 player.play(player.hand[card])
+                return game
 
     def draw(self, game):
         for player in game.participants:
             if player.player == self.username:
                 player.draw()
+                return game
 
     def hand(self, game):
         for player in game.participants:
@@ -51,4 +53,4 @@ class Game(db.Model):
     __tablename__ = 'Game'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    game = db.Column(db.String(255))
+    game = db.Column(db.String(10000))

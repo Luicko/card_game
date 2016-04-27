@@ -3,6 +3,9 @@ from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mysql import MySQL
 
+from pymongo import MongoClient
+
+
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('card_game.settings')
 app.config.from_pyfile('settings.conf')
@@ -12,7 +15,8 @@ lm.init_app(app)
 lm.login_view = 'login'
 
 db = SQLAlchemy(app)
-
+#client = MongoClient( 'localhost', 6000 )
+#bd = client.games
 from . import models, views, settings
 
 @lm.user_loader
