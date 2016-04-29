@@ -1,13 +1,14 @@
-from __future__ import absolute_import
-from __future__ import print_function # In python 2.7
+from __future__ import absolute_import, print_function # In python 2.7
 
 from flask.ext.login import UserMixin
 
 from . import db, app
 
+
 player_game_table = db.Table('PlayerGame',
     db.Column('idplayer', db.Integer, db.ForeignKey('Player.id')),
     db.Column('idgamme', db.Integer, db.ForeignKey('Game.id')))
+
 
 class Player(db.Model, UserMixin):
     __tablename__ = 'Player'
@@ -28,6 +29,12 @@ class Player(db.Model, UserMixin):
     @property
     def is_anonymous(self):
         return False
+
+    @property
+    def is_playing(self, game):
+        for player in game.participants:
+            if player.player == user.username:
+                return True
     
     def play(self, game, card):
         for player in game.participants:
@@ -44,10 +51,11 @@ class Player(db.Model, UserMixin):
     def hand(self, game):
         for player in game.participants:
             if player.player == self.username:
-                return player.hand   
+                return player.hand
     
     def __repr__(self):
         return '<User %r>' % (self.username)
+
 
 class Game(db.Model):
     __tablename__ = 'Game'

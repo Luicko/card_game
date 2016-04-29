@@ -1,4 +1,4 @@
-from __future__ import print_function # In python 2.7
+from __future__ import print_function
 import sys
 import json
 
@@ -9,31 +9,22 @@ from flask.ext.login import (login_user, logout_user, current_user,
 from werkzeug.security import generate_password_hash, \
      check_password_hash
 
-from . import engine, app, db#, bd
+from . import engine, app, db
 from .forms import AddPlayer, LoginForm
 from engine import *
 from .models import Player, Game
 from .schema import *
 
+
 def set_game():
     query = Game.query.first()
     if query:
         g = json.loads(str(query.game))
-        print(type(query.game), file=sys.stderr)
-        print(g, file=sys.stderr)
         game = CardGameSchema().load(g)
-        print(type(g), file=sys.stderr)
-        print(type(game.data), file=sys.stderr)
-        print(game.data.act_player, file=sys.stderr)
-        print(game.errors, file=sys.stderr)
         return game.data
     else:
         return None
 
-def is_playing(user ,game):
-        for player in game.participants:
-            if player.player == user.username:
-                return True
 
 def save_game(game):
     dic = CardGameSchema().dump(game)
@@ -55,6 +46,7 @@ def save_game(game):
 def index():
     return render_template('index.html')
 
+
 @app.route('/signup', methods=['GET', 'POST'])
 def regist():
     if current_user.is_authenticated:
@@ -68,13 +60,16 @@ def regist():
         return redirect(url_for('login'))
     return render_template('addplayer.html', form=form, title='Sign Up')
 
-@app.route('/sign in', methods=['GET', 'POST'])
+
+@app.route('/signin', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
+
     if form.validate_on_submit():
         u = Player.query.filter_by(username=form.username.data).first()
+        
         if not u:
             return redirect(url_for('login'))
         elif check_password_hash(u.password, form.password.data):
@@ -82,24 +77,27 @@ def login():
             return redirect(url_for('index'))
     return render_template('login.html', form=form, title='Sign In')
 
+
 @app.route('/logout')
 def logout():
     game = set_game()
     if game:
-        if is_playing(current_user, game):
+        if current_user.is_playing(game):
             game.player_quit(current_user.username)
     logout_user()
     session.clear()
     return redirect(url_for('index'))
+
 
 @app.route('/preparation', methods=['GET', 'POST'])
 def preparation():
     player_list = Player.query.all()
     game = set_game()
     if game:
-        if is_playing(current_user, game):
+        if current_user.is_playing(game):
             return redirect('playing')
     return render_template('preparation.html', player_list=player_list)
+
 
 @app.route('/ready', methods=['GET', 'POST'])
 def ready():
@@ -109,6 +107,7 @@ def ready():
     save_game(game)
     return redirect(url_for('playing'))
 
+
 @app.route('/playing')
 def playing():
     game = set_game()
@@ -117,6 +116,7 @@ def playing():
         return render_template('playing.html', game=game)
     else:
         return redirect(url_for('winner'))
+
 
 @app.route('/play/<card>', methods=['POST', 'GET'])
 def play(card):
@@ -129,12 +129,14 @@ def play(card):
         flash(str(error))
         return redirect('/playing')
 
+
 @app.route('/draw')
 def draw():
     game = set_game()
     game = current_user.draw(game)
     save_game(game)
     return redirect('/playing')
+
 
 @app.route('/winner')
 def winner():

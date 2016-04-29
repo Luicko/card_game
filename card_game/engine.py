@@ -1,8 +1,4 @@
 import random
-import itertools
-
-
-POINTS_PER_GAME = 2
 
 
 class PlayerHand(object):
@@ -84,7 +80,7 @@ class CardGame(object):
         self.participants = []
 
     def show_card(self, card):
-        return (self.values[card.value] +' - '+ self.ranks[card.rank])
+        return '%r - %s' % (self.values[card.value], self.ranks[card.rank])
 
     def compare(self, other):
         if self.last_card_played.rank < other.rank:
