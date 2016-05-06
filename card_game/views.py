@@ -23,7 +23,7 @@ def set_game():
         g = json.loads(str(query.game))
         game = CardGameSchema().load(g)
         return game.data
-        
+
     else:
         return 0
 
@@ -71,6 +71,7 @@ def regist():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+        
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -124,6 +125,7 @@ def ready():
 @app.route('/playing')
 def playing():
     game = set_game()
+
     if not game.winner:
         return render_template('playing.html', game=game)
 
@@ -134,10 +136,12 @@ def playing():
 @app.route('/play/<card>', methods=['POST', 'GET'])
 def play(card):
     game = set_game()
+
     try:
         game = current_user.play(game, int(card))
         save_game(game)
         return redirect(url_for('playing'))
+
     except ValueError as error:
         flash(str(error))
         return redirect('/playing')
