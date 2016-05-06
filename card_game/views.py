@@ -18,10 +18,12 @@ from .schema import *
 
 def set_game():
     query = Game.query.first()
+
     if query:
         g = json.loads(str(query.game))
         game = CardGameSchema().load(g)
         return game.data
+        
     else:
         return 0
 
@@ -30,10 +32,12 @@ def save_game(game):
     dic = CardGameSchema().dump(game)
     d = json.dumps(dic.data)
     query = Game.query.first()
+
     if query:
         query.game = d
         db.session.add(query)
         db.session.commit()
+
     else:
         g = Game(game=d)
         db.session.add(g)
@@ -50,13 +54,16 @@ def index():
 def regist():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
     form = AddPlayer()
+
     if form.validate_on_submit():
         u = Player(username=form.username.data, 
             password=generate_password_hash(form.password.data), score=0)
         db.session.add(u)
         db.session.commit()
         return redirect(url_for('login'))
+
     return render_template('addplayer.html', form=form, title='Sign Up')
 
 
@@ -71,19 +78,23 @@ def login():
         
         if not u:
             return redirect(url_for('login'))
+
         elif check_password_hash(u.password, form.password.data):
             login_user(u)
             return redirect(url_for('index'))
+
     return render_template('login.html', form=form, title='Sign In')
 
 
 @app.route('/logout')
 def logout():
     game = set_game()
+
     if game:
         if current_user.is_playing(game):
             game.player_quit(current_user.username)
             save_game(game)
+
     logout_user()
     session.clear()
     return redirect(url_for('index'))
@@ -93,9 +104,11 @@ def logout():
 def preparation():
     player_list = Player.query.all()
     game = set_game()
+
     if game:
         if current_user.is_playing(game):
             return redirect('playing')
+
     return render_template('preparation.html', player_list=player_list)
 
 
@@ -113,6 +126,7 @@ def playing():
     game = set_game()
     if not game.winner:
         return render_template('playing.html', game=game)
+
     else:
         return redirect(url_for('winner'))
 

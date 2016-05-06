@@ -11,6 +11,7 @@ class PlayerHand(object):
     def play(self, card):
         if card not in self.hand:
             raise ValueError ("You don't have that card")
+            
         self.game.play(player=self, card=card)
         self.hand.remove(card)
 
@@ -34,8 +35,10 @@ class CardGame(object):
         self.deck = []
         self.turn = None
         initial_draw = int((len(self.stock.cards) * 0.5) / len(players))
+
         if initial_draw == 0:
             initial_draw = 1
+
         for p in players:
             cards = [self.stock.deal() for x in range(initial_draw)]
             self.participants.append(PlayerHand(p, cards, game=self))
@@ -48,20 +51,24 @@ class CardGame(object):
     def play(self, player, card):
         if player != self.act_player:
             raise ValueError ("It isn't your turn")
+
         if not self.last_card_played:
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
             self.act_player = self.participants[self.turn]
             self.turn = self.next_turn()
+
         elif self.act_player == self.last_player or self.compare(other=card):
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
             self.act_player = self.participants[self.turn]
             self.turn = self.next_turn()
+
         else:
             raise ValueError ("You can't make that play")
+
         if player.hand[-1] == player.hand[0]: 
             self.set_winner(player)
 
@@ -69,8 +76,10 @@ class CardGame(object):
     def deal(self, player=None):
         if player and player != self.act_player:
             raise ValueError ("It isn't your turn")
+
         else:
             draw = self.stock.deal()
+
             if not draw:
                 self.stock = Stock(self.deck)
                 self.deal() 
@@ -88,16 +97,20 @@ class CardGame(object):
     def compare(self, other):
         if self.last_card_played.rank < other.rank:
             return 1
+
         elif self.last_card_played.rank == other.rank:
             if self.last_card_played.value < other.value:
                 return 1
+
         else:
             return 0
 
     def player_quit(self, user):
         for player in self.participants:
+
             if player.player == user:
                 quit = player
+
                 if self.act_player == player:
                     self.act_player = self.participants[self.turn]
                 self.turn = self.next_turn()
@@ -114,6 +127,7 @@ class Stock(object):
             self.cards = []
             self.create(ranks, values)
             self.shuffle()
+
         else:
             self.cards = cards
 
