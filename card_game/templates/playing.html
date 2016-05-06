@@ -1,29 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
+
 {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
+    {% if messages %}
+      <ul>
+		      {% for message in messages %}
             <li>{{ message }} </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    	    {% endfor %}
+      </ul>
+    {% endif %}
+{% endwith %}
 <h3>This are the cards:</h3>
 {% set hand = current_user.hand(game) %}
 {% for card in hand %}
-<a href="{{ url_for('play', card=hand.index(card)) }}">{{ game.show_card(card) }}</a><br>
+	<a href="{{ url_for('play', card=hand.index(card)) }}">{{ game.show_card(card) }}</a><br>
 {% endfor %}
 
 <h3>Last card played was:</h3>
+
 {% if game.last_card_played %}
-{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}
+	{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}
 {% endif %}
+
 <h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
+
 Sota < Copa < Moneda < Espada<br>
 Principe < Caballo < Rey < 2
 
-{{ game.last_player }}
-{{ game.participants[0] }}
-{{ game.participants[1] }}
 {% endblock %}

@@ -15,7 +15,7 @@ class PlayerHand(object):
         self.hand.remove(card)
 
     def draw(self):
-        self.hand.append(self.game.deal())
+        self.hand.append(self.game.deal(self))
 
 
 class CardGame(object):
@@ -32,7 +32,7 @@ class CardGame(object):
         self.last_card_played = 0
         self.stock = Stock(ranks=len(self.ranks), values=len(self.values))
         self.deck = []
-        self.turns = None
+        self.turn = None
         initial_draw = int((len(self.stock.cards) * 0.5) / len(players))
         if initial_draw == 0:
             initial_draw = 1
@@ -42,7 +42,7 @@ class CardGame(object):
 
     def start_game(self):
         self.act_player = self.participants[0]
-        self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
+        self.turn = self.next_turn()
 
 
     def play(self, player, card):
@@ -52,28 +52,31 @@ class CardGame(object):
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
-            self.act_player = self.participants[self.turns]
-            self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
+            self.act_player = self.participants[self.turn]
+            self.turn = self.next_turn()
         elif self.act_player == self.last_player or self.compare(other=card):
             self.deck.append(card)
             self.last_card_played = card
             self.last_player = self.act_player
-            self.act_player = self.participants[self.turns]
-            self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
+            self.act_player = self.participants[self.turn]
+            self.turn = self.next_turn()
         else:
             raise ValueError ("You can't make that play")
         if player.hand[-1] == player.hand[0]: 
             self.set_winner(player)
 
 
-    def deal(self):
-        draw = self.stock.deal()
-        if not draw:
-            self.stock = Stock(self.deck)
-            self.deal() 
-        self.act_player = self.participants[self.turns]
-        self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
-        return draw
+    def deal(self, player=None):
+        if player and player != self.act_player:
+            raise ValueError ("It isn't your turn")
+        else:
+            draw = self.stock.deal()
+            if not draw:
+                self.stock = Stock(self.deck)
+                self.deal() 
+            self.act_player = self.participants[self.turn]
+            self.turn = self.next_turn()
+            return draw
 
     def set_winner(self, player):
         self.winner = player.player
@@ -94,10 +97,14 @@ class CardGame(object):
     def player_quit(self, user):
         for player in self.participants:
             if player.player == user:
+                quit = player
                 if self.act_player == player:
-                    self.act_player = self.participants[self.turns]
-                self.participants.remove(player)
-                self.turns = (self.participants.index(self.act_player) + 1) % len(self.participants)
+                    self.act_player = self.participants[self.turn]
+                self.turn = self.next_turn()
+            self.participants.remove(quit)
+
+    def next_turn(self):
+        return (self.participants.index(self.act_player) + 1) % len(self.participants)
 
 
 class Stock(object):

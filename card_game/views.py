@@ -23,12 +23,11 @@ def set_game():
         game = CardGameSchema().load(g)
         return game.data
     else:
-        return None
+        return 0
 
 
 def save_game(game):
     dic = CardGameSchema().dump(game)
-    print(dic.data, file=sys.stderr)
     d = json.dumps(dic.data)
     query = Game.query.first()
     if query:
@@ -84,6 +83,7 @@ def logout():
     if game:
         if current_user.is_playing(game):
             game.player_quit(current_user.username)
+            save_game(game)
     logout_user()
     session.clear()
     return redirect(url_for('index'))
@@ -111,7 +111,6 @@ def ready():
 @app.route('/playing')
 def playing():
     game = set_game()
-    print(game, file=sys.stderr)
     if not game.winner:
         return render_template('playing.html', game=game)
     else:
@@ -133,9 +132,13 @@ def play(card):
 @app.route('/draw')
 def draw():
     game = set_game()
-    game = current_user.draw(game)
-    save_game(game)
-    return redirect('/playing')
+    try:
+        game = current_user.draw(game)
+        save_game(game)
+        return redirect(url_for('playing'))
+    except ValueError as error:
+        flash(str(error))
+        return redirect('/playing')
 
 
 @app.route('/winner')

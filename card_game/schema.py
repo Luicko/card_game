@@ -5,7 +5,7 @@ class CardGameSchema(Schema):
     last_card_played = fields.Nested('CardSchema', default=None, allow_none=True)
     stock = fields.Nested('StockSchema')
     deck = fields.Nested('CardSchema', many=True)
-    turns = fields.Integer()
+    turn = fields.Integer()
     participants = fields.Nested('PlayerHandSchema', many=True)
     act_player = fields.Nested('PlayerHandSchema' , default=None, allow_none=True)
     last_player = fields.Nested('PlayerHandSchema' , default=None, allow_none=True)
@@ -17,7 +17,7 @@ class CardGameSchema(Schema):
         c.stock = data['stock']
         c.last_card_played = data['last_card_played']
         c.deck = data['deck']
-        c.turns = data['turns']
+        c.turn = data['turn']
         c.winner = None
         if 'participants' in data:
             x = 0

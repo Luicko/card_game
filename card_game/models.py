@@ -30,10 +30,9 @@ class Player(db.Model, UserMixin):
     def is_anonymous(self):
         return False
 
-    @property
     def is_playing(self, game):
         for player in game.participants:
-            if player.player == user.username:
+            if player.player == self.username:
                 return True
     
     def play(self, game, card):
