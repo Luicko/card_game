@@ -1,6 +1,8 @@
 from __future__ import print_function
 import sys
 import json
+from threading import Thread
+import time
 
 from flask import (render_template, redirect, url_for, 
     request, g, flash, session)
@@ -8,13 +10,24 @@ from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from werkzeug.security import generate_password_hash, \
      check_password_hash
+from flask.ext.socketio import emit
 
-from . import engine, app, db
+from . import engine, app, db, socketio
 from .forms import AddPlayer, LoginForm
 from engine import *
 from .models import Player, Game
 from .schema import *
 
+thread = None
+
+def background_thread():
+    """Example of how to send server generated events to clients."""
+    time.sleep(10)
+    game = set_game()
+    card = game.show_card(game.last_card_played)
+    socketio.emit('my response',
+                {'data': card, 'player': game.last_player.player, 'turn': game.act_player.player },
+                namespace='/test', broadcast=True)
 
 def set_game():
     query = Game.query.first()
@@ -37,11 +50,21 @@ def save_game(game):
         query.game = d
         db.session.add(query)
         db.session.commit()
+        global thread
+        thread = Thread(target=background_thread)
+        thread.daemon = True
+        thread.start()
+        del(thread)
 
     else:
         g = Game(game=d)
         db.session.add(g)
         db.session.commit()
+        global thread
+        thread = Thread(target=background_thread)
+        thread.daemon = True
+        thread.start()
+        del(thre)
 
 
 @app.route('/')
@@ -71,7 +94,7 @@ def regist():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-        
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -119,6 +142,7 @@ def ready():
     game = CardGame(player_list)
     game.start_game()
     save_game(game)
+    global thread
     return redirect(url_for('playing'))
 
 
@@ -164,6 +188,8 @@ def winner():
     query = Game.query.first()
     u = Player.query.filter_by(username=game.winner).first()
     u.score += 2
+    global thread
+    thread.stop()
     db.session.add(u)
     db.session.delete(query)
     db.session.commit()

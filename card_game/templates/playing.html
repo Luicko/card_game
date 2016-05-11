@@ -1,6 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
+ <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            namespace = '/test'; 
+
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            socket.on('my response', function(msg) {
+                $('#log').append($('<div/>').text(msg.data + ' by ' + msg.player).html());
+                $('#log2').append($('<div/>').text("It's " + msg.turn + ' turn').html());
+            });
+        });
+    </script>
+
 {% with messages = get_flashed_messages() %}
     {% if messages %}
       <ul>
@@ -19,8 +32,13 @@
 <h3>Last card played was:</h3>
 
 {% if game.last_card_played %}
-	{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}
+	<div id="log">{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}</div><br>
+  <div id="log2">It's {{ game.act_player.player }} turn</div>
+{% else %}
+  Waiting for the first player
 {% endif %}
+<div id='log'></div>
+<div id='log2'></div>
 
 <h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
 
