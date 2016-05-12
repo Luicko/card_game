@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 import json
-from threading import Thread
+from threading import Thread, Lock
 import time
 
 from flask import (render_template, redirect, url_for, 
@@ -18,11 +18,10 @@ from engine import *
 from .models import Player, Game
 from .schema import *
 
-thread = None
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-    time.sleep(10)
+    time.sleep(3)
     game = set_game()
     card = game.show_card(game.last_card_played)
     socketio.emit('my response',
@@ -50,21 +49,19 @@ def save_game(game):
         query.game = d
         db.session.add(query)
         db.session.commit()
-        global thread
+
         thread = Thread(target=background_thread)
         thread.daemon = True
         thread.start()
-        del(thread)
 
     else:
         g = Game(game=d)
         db.session.add(g)
         db.session.commit()
-        global thread
+
         thread = Thread(target=background_thread)
         thread.daemon = True
         thread.start()
-        del(thre)
 
 
 @app.route('/')
@@ -142,7 +139,6 @@ def ready():
     game = CardGame(player_list)
     game.start_game()
     save_game(game)
-    global thread
     return redirect(url_for('playing'))
 
 
@@ -188,8 +184,6 @@ def winner():
     query = Game.query.first()
     u = Player.query.filter_by(username=game.winner).first()
     u.score += 2
-    global thread
-    thread.stop()
     db.session.add(u)
     db.session.delete(query)
     db.session.commit()

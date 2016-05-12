@@ -8,8 +8,8 @@
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
             socket.on('my response', function(msg) {
-                $('#log').append($('<div/>').text(msg.data + ' by ' + msg.player).html());
-                $('#log2').append($('<div/>').text("It's " + msg.turn + ' turn').html());
+                $('#log').replaceWith("<div id='log'>" + msg.data + ' by ' + msg.player + "</div>");
+                $('#log2').replaceWith("<div id ='log2'>It's " + msg.turn + ' turn</div>');
             });
         });
     </script>
@@ -35,10 +35,9 @@
 	<div id="log">{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}</div><br>
   <div id="log2">It's {{ game.act_player.player }} turn</div>
 {% else %}
-  Waiting for the first player
+  <div id='log'>Waiting for the first player</div>
+  <div id='log2'>.</div>
 {% endif %}
-<div id='log'></div>
-<div id='log2'></div>
 
 <h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
 
