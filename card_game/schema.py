@@ -23,12 +23,12 @@ class CardGameSchema(Schema):
         if 'participants' in data:
             x = 0
             c.participants = []
-            c.last_player = data['last_player']            
+            c.last_player = data['last_player']
             c.act_player = data['act_player']
 
             for p in data['participants']:
                 c.participants.append(p)
-                c.participants[x].game = c            
+                c.participants[x].game = c
                 x += 1
 
             for p in c.participants:
@@ -48,6 +48,7 @@ class StockSchema(Schema):
     def make_stock(self, data):
         return Stock(**data)
 
+
 class CardSchema(Schema):
     rank = fields.Integer()
     value = fields.Integer()
@@ -59,6 +60,7 @@ class CardSchema(Schema):
 
         else:
             return Card(**data)
+
 
 class PlayerHandSchema(Schema):
     player = fields.String()

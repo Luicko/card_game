@@ -19,13 +19,13 @@ from .models import Player, Game
 from .schema import *
 
 
-def background_thread():
-    """Example of how to send server generated events to clients."""
+def broadcast():
     time.sleep(3)
     game = set_game()
     card = game.show_card(game.last_card_played)
     socketio.emit('my response',
-                {'data': card, 'player': game.last_player.player, 'turn': game.act_player.player },
+                {'data': card, 'player': game.last_player.player,
+                'turn': game.act_player.player },
                 namespace='/test', broadcast=True)
 
 def set_game():
@@ -50,7 +50,7 @@ def save_game(game):
         db.session.add(query)
         db.session.commit()
 
-        thread = Thread(target=background_thread)
+        thread = Thread(target=broadcast)
         thread.daemon = True
         thread.start()
 
@@ -59,7 +59,7 @@ def save_game(game):
         db.session.add(g)
         db.session.commit()
 
-        thread = Thread(target=background_thread)
+        thread = Thread(target=broadcast)
         thread.daemon = True
         thread.start()
 
@@ -79,7 +79,8 @@ def regist():
 
     if form.validate_on_submit():
         u = Player(username=form.username.data, 
-            password=generate_password_hash(form.password.data), score=0)
+            password=generate_password_hash(form.password.data),
+            score=0)
         db.session.add(u)
         db.session.commit()
         return redirect(url_for('login'))
