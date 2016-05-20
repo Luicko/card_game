@@ -11,6 +11,10 @@
                 $('#log').replaceWith("<div id='log'>" + msg.data + ' by ' + msg.player + "</div>");
                 $('#log2').replaceWith("<div id ='log2'>It's " + msg.turn + ' turn</div>');
             });
+
+            socket.on('leave', function(msg) {
+                alert(msg.data + " Has leave the game");
+            });
         });
     </script>
 
@@ -43,5 +47,7 @@
 
 Sota < Copa < Moneda < Espada<br>
 Principe < Caballo < Rey < 2
+
+<a href="{{ url_for('player_quit') }}">Exit</a>
 
 {% endblock %}

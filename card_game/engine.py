@@ -3,7 +3,7 @@ import random
 
 class PlayerHand(object):
 
-    def __init__(self, player, hand, game):
+    def __init__(self, player, game, hand=None):
         self.player = player
         self.game = game
         self.hand = hand
@@ -25,7 +25,7 @@ class CardGame(object):
     values = ['1', '3', '4', '5', '6', '7', '8', '9', '10',
             'Principe', 'Caballo', 'Rey', '2']
 
-    def __init__(self, players):
+    def __init__(self):
         self.participants = []
         self.winner = None
         self.act_player = 0
@@ -34,19 +34,19 @@ class CardGame(object):
         self.stock = Stock(ranks=len(self.ranks), values=len(self.values))
         self.deck = []
         self.turn = None
-        initial_draw = int((len(self.stock.cards) * 0.5) / len(players))
+
+    def start_game(self):
+        initial_draw = int((len(self.stock.cards) * 0.5) / len(self.participants))
 
         if initial_draw == 0:
             initial_draw = 1
 
-        for p in players:
+        for player in self.participants:
             cards = [self.stock.deal() for x in range(initial_draw)]
-            self.participants.append(PlayerHand(p, cards, game=self))
+            player.hand = cards
 
-    def start_game(self):
         self.act_player = self.participants[0]
         self.turn = self.next_turn()
-
 
     def play(self, player, card):
         if player != self.act_player:
@@ -113,11 +113,21 @@ class CardGame(object):
 
                 if self.act_player == player:
                     self.act_player = self.participants[self.turn]
-                self.turn = self.next_turn()
-            self.participants.remove(quit)
+                    self.turn = self.next_turn()
+
+                elif self.last_player == player:
+                    self.last_player = self.participants[self.leave()]
+
+        self.participants.remove(quit)
 
     def next_turn(self):
         return (self.participants.index(self.act_player) + 1) % len(self.participants)
+
+    def leave(self):
+        return (self.participants.index(self.last_player) - 1) % len(self.participants)
+
+    def add_player(self, player):
+        self.participants.append(PlayerHand(player, game=self))
 
 
 class Stock(object):

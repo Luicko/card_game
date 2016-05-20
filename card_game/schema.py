@@ -5,8 +5,8 @@ class CardGameSchema(Schema):
     last_card_played = fields.Nested('CardSchema', default=None, allow_none=True)
     stock = fields.Nested('StockSchema')
     deck = fields.Nested('CardSchema', many=True)
-    turn = fields.Integer()
-    participants = fields.Nested('PlayerHandSchema', many=True)
+    turn = fields.Integer(default=None, allow_none=True)
+    participants = fields.Nested('PlayerHandSchema', many=True, default=None, allow_none=True)
     act_player = fields.Nested('PlayerHandSchema' , default=None, allow_none=True)
     last_player = fields.Nested('PlayerHandSchema' , default=None, allow_none=True)
     winner = fields.String(default=None, allow_none=True)
@@ -31,13 +31,14 @@ class CardGameSchema(Schema):
                 c.participants[x].game = c
                 x += 1
 
-            for p in c.participants:
-                if c.act_player.player == p.player:
-                    c.act_player = p
+            if c.last_player or c.act_player:
+                for p in c.participants:
+                    if c.act_player.player == p.player:
+                        c.act_player = p
 
-                if c.last_player:
-                    if c.last_player.player == p.player:
-                        c.last_player = p
+                    if c.last_player:
+                        if c.last_player.player == p.player:
+                            c.last_player = p
         return c
 
 
@@ -64,7 +65,7 @@ class CardSchema(Schema):
 
 class PlayerHandSchema(Schema):
     player = fields.String()
-    hand = fields.Nested('CardSchema', many=True)
+    hand = fields.Nested('CardSchema', many=True, allow_none=True)
 
     @post_load
     def make_hand(self, data):
@@ -77,6 +78,7 @@ class PlayerHandSchema(Schema):
             ph.hand = []
             ph.game = None
             
-            for card in data['hand']:
-                ph.hand.append(card)
+            if data['hand']:
+                for card in data['hand']:
+                    ph.hand.append(card)
             return ph

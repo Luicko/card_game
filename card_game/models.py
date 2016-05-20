@@ -17,6 +17,7 @@ class Player(db.Model, UserMixin):
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
     score = db.Column(db.Integer)
+    game_id = db.Column(db.Integer, db.ForeignKey('Game.id'))
 
     @property
     def is_authenticated(self):
@@ -30,10 +31,9 @@ class Player(db.Model, UserMixin):
     def is_anonymous(self):
         return False
 
-    def is_playing(self, game):
-        for player in game.participants:
-            if player.player == self.username:
-                return True
+    def is_playing(self):
+        if self.game_id:
+            return True
     
     def play(self, game, card):
         for player in game.participants:
@@ -61,3 +61,7 @@ class Game(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     game = db.Column(db.String(10000))
+    game_name = db.Column(db.String(255))
+
+    def __repr__(self):
+        return '<Game {}>'.format(self.game_name)

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            namespace = '/test'; 
+
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            socket.on('join', function(msg) {
+                $('ul').append("<li>" msg.data "<li>");
+            });
+
+            socket.on('leave', function(msg) {
+                location.reload();
+            });
+
+            socket.on('start', function(msg) {
+                location.reload();
+            });
+        });
+</script>
+
+<h3>This is - {{ game[0] }} Game</h3>
+Game Owner: {{ game[1].participants[0].player }}
+
+Player List:
+<ul>
+	{% for player in game[1].participants %}
+		<li> {{ player.player }} </li>
+	{% endfor %}
+</ul>
+
+{% if current_user.username == game[1].participants[0].player %}
+<a href="{{ url_for('ready', game_name=game[0]) }}"><input type="button" value="Start Game"/></a>
+{% endif %}
+
+<a href="{{ url_for('player_quit') }}">Exit</a>
+
+{% endblock %}

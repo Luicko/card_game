@@ -12,3 +12,7 @@ class LoginForm(Form):
     username = StringField('Username', validators=[
             validators.DataRequired()])
     password = PasswordField('Password')
+
+class CreateRoom(Form):
+	game_name = StringField('Game Name', validators=[
+            validators.DataRequired()])

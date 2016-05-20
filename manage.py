@@ -8,6 +8,24 @@ server = Server(host="0.0.0.0")
 manager = Manager(app, server)
 
 @manager.command
+def clean():
+	from card_game import db, models
+	
+	l = models.Player.query.filter_by(username='Luis').first()
+	l.game_id = None
+	db.session.add(l)
+	db.session.commit()
+
+	q = models.Player.query.filter_by(username='AQ').first()
+	q.game_id = None
+	db.session.add(q)
+	db.session.commit()
+
+	g = models.Game.query.first()
+	db.session.delete(g)
+	db.session.commit()
+
+@manager.command
 def run():
    socketio.run(app,
                 host='127.0.0.1',

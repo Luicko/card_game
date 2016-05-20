@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h3>Choose the players that are going to participate</h3>
-<form action="{{ url_for('ready') }}" method="post">
-{% for player in player_list %}
-	{{ player.username }} <input type="checkbox" value="{{ player.username }}" name=add ></input><br>
+<h3>Here are the games available at the moment:</h3>
+{% for game in game_list %}
+	<a href="{{ url_for('game_room', game_name=game.game_name) }}">{{ game.game_name }}</a> <br>
 {% endfor %}
-With selected:
-<input type="submit" value="Add" />
-</form>
+<a href="{{ url_for('create_room') }}"><input type='button' value='Create Room'/></a>
+
+<a href="{{ url_for('index') }}">Back</a>
 {% endblock %}
