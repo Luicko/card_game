@@ -109,21 +109,27 @@ class CardGame(object):
         for player in self.participants:
 
             if player.player == user:
-                quit = player
+                leave = player
 
-                if self.act_player == player:
-                    self.act_player = self.participants[self.turn]
-                    self.turn = self.next_turn()
+        self.participants.remove(leave)
 
-                elif self.last_player == player:
-                    self.last_player = self.participants[self.leave()]
+        if self.participants[-1] == self.participants[0]:
+            pass
 
-        self.participants.remove(quit)
+        elif self.act_player == leave:
+            self.turn = self.leave_turn_act()
+            self.act_player = self.participants[self.turn]
+
+        elif self.last_player == leave:
+            self.last_player = self.participants[self.leave_turn_last()]
 
     def next_turn(self):
         return (self.participants.index(self.act_player) + 1) % len(self.participants)
 
-    def leave(self):
+    def leave_turn_act(self):
+        return (self.participants.index(self.last_player) + 1) % len(self.participants)
+
+    def leave_turn_last(self):
         return (self.participants.index(self.last_player) - 1) % len(self.participants)
 
     def add_player(self, player):

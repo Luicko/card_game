@@ -177,6 +177,8 @@ def create_room():
 @app.route('/game_room/<game_name>', methods=['GET', 'POST'])
 def game_room(game_name):
     game = set_game(game_name=game_name)
+    u = Player.query.filter_by(username=current_user.username).first()
+    login_user(u)
     if game[1].turn:
         return redirect('playing')
     game[1].add_player(current_user.username)
@@ -256,6 +258,10 @@ def player_quit():
     game = set_game(game_id=u.game_id)
     u.game_id = None
     game[1].player_quit(u.username)
+    if game[1].participants:
+        save_game(game)
+    else:
+        
     db.session.add(u)
     db.session.commit()
     thread = Thread(target=broadcast_leave(u.username))

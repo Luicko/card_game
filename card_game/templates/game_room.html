@@ -8,7 +8,7 @@
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
             socket.on('join', function(msg) {
-                $('ul').append("<li>" msg.data "<li>");
+                $('ul').append("<li>" + msg.data + "<li>");
             });
 
             socket.on('leave', function(msg) {
