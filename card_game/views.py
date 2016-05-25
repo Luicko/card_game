@@ -18,6 +18,10 @@ from engine import *
 from .models import Player, Game
 from .schema import *
 
+@app.before_request
+def before_request():
+    g.user = current_user
+
 
 def broadcast_turn(game_name):
     time.sleep(3)
@@ -94,9 +98,10 @@ def save_game(game):
         db.session.commit()
 
 def player_join(game_name):
-    u = current_user
+    u = g.user
     game = Game.query.filter_by(game_name=game_name).first()
     u.game_id = game.id
+    g.user.game_id =  game.id
     db.session.add(u)
     db.session.commit()
 
@@ -109,7 +114,7 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def regist():
-    if current_user.is_authenticated:
+    if g.user.is_authenticated:
         return redirect(url_for('index'))
 
     form = AddPlayer()
@@ -127,7 +132,7 @@ def regist():
 
 @app.route('/signin', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    if g.user.is_authenticated:
         return redirect(url_for('index'))
 
     form = LoginForm()
@@ -156,7 +161,7 @@ def logout():
 def preparation():
     game_list = Game.query.all()
 
-    if current_user.is_playing():
+    if g.user.is_playing():
         return redirect('playing')
 
     return render_template('preparation.html', game_list=game_list)
@@ -177,16 +182,18 @@ def create_room():
 @app.route('/game_room/<game_name>', methods=['GET', 'POST'])
 def game_room(game_name):
     game = set_game(game_name=game_name)
-    u = Player.query.filter_by(username=current_user.username).first()
-    login_user(u)
+
     if game[1].turn:
         return redirect('playing')
-    game[1].add_player(current_user.username)
-    save_game(game)
-    player_join(game[0])
-    thread = Thread(target=broadcast_join(current_user.username))
-    thread.daemon = True
-    thread.start()
+
+    elif not g.user.game_id:
+        game[1].add_player(g.user.username)
+        save_game(game)
+        player_join(game[0])
+        thread = Thread(target=broadcast_join(g.user.username))
+        thread.daemon = True
+        thread.start()
+
     return render_template('game_room.html', game=game)
 
 
@@ -203,7 +210,7 @@ def ready(game_name):
 
 @app.route('/playing')
 def playing():
-    game = set_game(game_id=current_user.game_id)
+    game = set_game(game_id=g.user.game_id)
 
     if not game[1].winner:
         return render_template('playing.html', game=game[1])
@@ -214,10 +221,10 @@ def playing():
 
 @app.route('/play/<card>', methods=['POST', 'GET'])
 def play(card):
-    game = set_game(game_id=current_user.game_id)
+    game = set_game(game_id=g.user.game_id)
 
     try:
-        game[1] = current_user.play(game[1], int(card))
+        game[1] = g.user.play(game[1], int(card))
         save_game(game)
         return redirect(url_for('playing'))
 
@@ -228,10 +235,10 @@ def play(card):
 
 @app.route('/draw')
 def draw():
-    game = set_game(game_id=current_user.game_id)
+    game = set_game(game_id=g.user.game_id)
 
     try:
-        game[1] = current_user.draw(game[1])
+        game[1] = g.user.draw(game[1])
         save_game(game)
         return redirect(url_for('playing'))
     except ValueError as error:
@@ -241,7 +248,7 @@ def draw():
 
 @app.route('/winner')
 def winner():
-    game = set_game(game_id=current_user.game_id)
+    game = set_game(game_id=g.user.game_id)
     u = Player.query.filter_by(username=game[1].winner).first()
     u.score += 2
     db.session.add(u)
@@ -254,21 +261,22 @@ def winner():
 
 @app.route('/player_quit')
 def player_quit():
-    u = current_user
+    u = g.user
     game = set_game(game_id=u.game_id)
     u.game_id = None
     game[1].player_quit(u.username)
+
     if game[1].participants:
         save_game(game)
-    else:
-        
-    db.session.add(u)
-    db.session.commit()
-    thread = Thread(target=broadcast_leave(u.username))
-    thread.daemon = True
-    thread.start()
+        db.session.add(u)
+        db.session.commit()
+        thread = Thread(target=broadcast_leave(u.username))
+        thread.daemon = True
+        thread.start()
+
     return redirect(url_for('index'))
 
+#Old way to add player, saved for future, checkbox data retrieve
 #player_list = request.form.getlist("add")
 #With selected:
 #<input type="submit" value="Add" />
