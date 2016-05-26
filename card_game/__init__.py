@@ -1,3 +1,4 @@
+#async desgined for socket functionability
 async_mode = None
 
 if async_mode is None:
