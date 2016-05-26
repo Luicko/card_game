@@ -168,7 +168,7 @@ class CardGame(object):
 
         self.participants.remove(leave)
 
-        if self.participants[-1] == self.participants[0]:
+        if self.participants:
             pass
 
         elif self.act_player == leave:

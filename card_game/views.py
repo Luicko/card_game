@@ -265,14 +265,19 @@ def player_quit():
     game = set_game(game_id=u.game_id)
     u.game_id = None
     game[1].player_quit(u.username)
+    db.session.add(u)
+    db.session.commit()
 
     if game[1].participants:
         save_game(game)
-        db.session.add(u)
-        db.session.commit()
         thread = Thread(target=broadcast_leave(u.username))
         thread.daemon = True
         thread.start()
+
+    else:
+        query = Game.query.filter_by(game_name=game[0]).first()
+        db.session.delete(query)
+        db.session.commit()
 
     return redirect(url_for('index'))
 
