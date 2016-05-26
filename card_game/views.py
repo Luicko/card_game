@@ -281,6 +281,11 @@ def player_quit():
 
     return redirect(url_for('index'))
 
+@app.route('/score_board')
+def score_board():
+    players = Player.query.order_by(Player.score.desc()).all()
+    return render_template('scoreboard.html', players=players)
+
 #Old way to add player, saved for future, checkbox data retrieve
 #player_list = request.form.getlist("add")
 #With selected:

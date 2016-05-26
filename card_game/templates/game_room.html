@@ -26,9 +26,9 @@ Game Owner: {{ game[1].participants[0].player }}
 
 Player List:
 <ul>
-	{% for player in game[1].participants %}
-		<li> {{ player.player }} </li>
-	{% endfor %}
+  {% for player in game[1].participants %}
+    <li> {{ player.player }} </li>
+  {% endfor %}
 </ul>
 
 {% if current_user.username == game[1].participants[0].player %}

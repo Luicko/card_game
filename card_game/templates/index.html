@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 <div id='cssmenu'>
-	<ul>	
-			{% if current_user.is_authenticated %}
-				<li class='active'><a href='{{ url_for("preparation") }}'><span>Start Game</span></a></li>
-			{% else %}
-				<li class='active'><a href='{{ url_for("login") }}'><span>Sign In</span></a></li>
-			{% endif %}
-			
-			<li><a href='{{ url_for("regist") }}'><span>Create Account</span></a></li>
-			<li class='last'><a href='#'><span>Score Table</span></a></li>
-		</ul>
+  <ul>  
+    {% if current_user.is_authenticated %}
+      <li class='active'><a href='{{ url_for("preparation") }}'><span>Start Game</span></a></li>
+    {% else %}
+      <li class='active'><a href='{{ url_for("login") }}'><span>Sign In</span></a></li>
+    {% endif %}
+      
+    <li><a href='{{ url_for("regist") }}'><span>Create Account</span></a></li>
+    <li class='last'><a href="{{ url_for('score_board') }}"><span>Score Table</span></a></li>
+  </ul>
 </div>
 {% endblock %}
