@@ -2,6 +2,9 @@ from marshmallow import Schema, fields, post_load
 from engine import *
 
 class CardGameSchema(Schema):
+    """
+    Basic schema of a :class:`CardGame` to be able to json its content
+    """
     last_card_played = fields.Nested('CardSchema', default=None, allow_none=True)
     stock = fields.Nested('StockSchema')
     deck = fields.Nested('CardSchema', many=True)
@@ -13,6 +16,11 @@ class CardGameSchema(Schema):
 
     @post_load
     def make_game(self, data):
+        """
+        Special function recreate an existing :class:`CardGame` instance
+        :param data: metadata of a game
+        :return: :class:`CardGame` instance
+        """
         c = CardGame.__new__(CardGame)
         c.stock = data['stock']
         c.last_card_played = data['last_card_played']
@@ -43,6 +51,9 @@ class CardGameSchema(Schema):
 
 
 class StockSchema(Schema):
+    """
+    Basic schema for a :class:`Stock` instance inside a :class:`CardGame` instance
+    """
     cards = fields.Nested('CardSchema', many=True)
 
     @post_load
@@ -51,6 +62,9 @@ class StockSchema(Schema):
 
 
 class CardSchema(Schema):
+    """
+    Basic schema for a :class:`Card`
+    """
     rank = fields.Integer()
     value = fields.Integer()
 
@@ -64,11 +78,19 @@ class CardSchema(Schema):
 
 
 class PlayerHandSchema(Schema):
+    """
+    Schema for a :class:`PlayerHand` instance insde a :class:`CardGame` instance
+    """
     player = fields.String()
     hand = fields.Nested('CardSchema', many=True, allow_none=True)
 
     @post_load
     def make_hand(self, data):
+        """
+        Function to recreate a :class:`PlayerHand` instance
+        :param data: metada for a player
+        :return: :class:`PlayerHand` instance
+        """
         if not data:
             pass
 

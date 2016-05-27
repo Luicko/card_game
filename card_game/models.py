@@ -36,18 +36,34 @@ class Player(db.Model, UserMixin):
             return True
     
     def play(self, game, card):
+        """
+        Function for the user to make a play
+        :param game: :class:`CardGame` instance
+        :param card: index from the :class:`PlayerHand`.hand list
+        :return: the updated :class:`CardGame` instance
+        """
         for player in game.participants:
             if player.player == self.username:
                 player.play(player.hand[card])
                 return game
 
     def draw(self, game):
+        """
+        Function for the user to draw a card
+        :param game: :class:`CardGame` instance
+        :return: the updated :class:`CardGame` instance
+        """
         for player in game.participants:
             if player.player == self.username:
                 player.draw()
                 return game
 
     def hand(self, game):
+        """
+        Function to retrieve the list of :class:`Card` instance of a player in his hand
+        :param game: :class:`CardGame` instance
+        :return: the :class:`PlayerHand`.hand list of the player
+        """
         for player in game.participants:
             if player.player == self.username:
                 return player.hand

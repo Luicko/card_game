@@ -10,7 +10,7 @@ manager = Manager(app, server)
 @manager.command
 def clean():
     """
-    Function designed for testin specific users and games
+    Command designed for testin specific users and games
     """
     from card_game import db, models
     
@@ -31,7 +31,7 @@ def clean():
 @manager.command
 def run():
     """
-    Function to enable the app to run under socket needs
+    Command to enable the app to run under socket needs
     """
     socketio.run(app,
                 host='127.0.0.1',
