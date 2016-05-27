@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% block content %}
-
- <script type="text/javascript" charset="utf-8">
+{% block scripts %}
+{{ super() }}
+  <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             namespace = '/test'; 
 
@@ -16,38 +16,41 @@
                 alert(msg.data + " Has leave the game");
             });
         });
-    </script>
+  </script>
+{% endblock %}
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul>
-          {% for message in messages %}
-            <li>{{ message }} </li>
-          {% endfor %}
-      </ul>
-    {% endif %}
-{% endwith %}
-<h3>This are the cards:</h3>
-{% set hand = current_user.hand(game) %}
-{% for card in hand %}
-  <a href="{{ url_for('play', card=hand.index(card)) }}">{{ game.show_card(card) }}</a><br>
-{% endfor %}
+{% block content %}
+<div class="container">
+  {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+            {% for message in messages %}
+              <li>{{ message }} </li>
+            {% endfor %}
+        </ul>
+      {% endif %}
+  {% endwith %}
+  <h3>This are the cards:</h3>
+  {% set hand = current_user.hand(game) %}
+  {% for card in hand %}
+    <a href="{{ url_for('play', card=hand.index(card)) }}">{{ game.show_card(card) }}</a><br>
+  {% endfor %}
 
-<h3>Last card played was:</h3>
+  <h3>Last card played was:</h3>
 
-{% if game.last_card_played %}
-  <div id="log">{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}</div><br>
-  <div id="log2">It's {{ game.act_player.player }} turn</div>
-{% else %}
-  <div id='log'>Waiting for the first player</div>
-  <div id='log2'>.</div>
-{% endif %}
+  {% if game.last_card_played %}
+    <div id="log">{{ game.show_card(game.last_card_played) }} by {{ game.last_player.player }}</div><br>
+    <div id="log2">It's {{ game.act_player.player }} turn</div>
+  {% else %}
+    <div id='log'>Waiting for the first player</div>
+    <div id='log2'>.</div>
+  {% endif %}
 
-<h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
+  <h3><a href="{{ url_for('draw') }}">Draw a Card</a></h3>
 
-Sota < Copa < Moneda < Espada<br>
-Principe < Caballo < Rey < 2
+  Sota < Copa < Moneda < Espada<br>
+  Principe < Caballo < Rey < 2
 
-<a href="{{ url_for('player_quit') }}">Exit</a>
-
+  <a href="{{ url_for('player_quit') }}">Exit</a>
+</div>
 {% endblock %}

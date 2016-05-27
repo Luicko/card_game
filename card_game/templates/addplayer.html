@@ -1,18 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Sign In</h3>
-<form action='' method='post'>
-  {{ form.hidden_tag() }}
-  Nickname: {{ form.username }}<br>
-  Password: {{ form.password }}<br>
-  Confirm: {{ form.confirm }}<br>
-  <input type='submit' value='Add'/>
-</form>
+<div class="container">
+  <div class="page-header">
+    <h3>Sign In</h3>
+  </div>
+  <form action='' method='post'>
+    {{ form.hidden_tag() }}
+    Nickname: {{ form.username }}<br>
+    Password: {{ form.password }}<br>
+    Confirm: {{ form.confirm }}<br>
+    <input type='submit' value='Add'/>
+  </form>
 
-{% for player in players %}
-  {{ player.name }} <button class="algo" value='{{ player.name }}'> - </button>
-{% endfor %}
+  {% for player in players %}
+    {{ player.name }} <button class="algo" value='{{ player.name }}'> - </button>
+  {% endfor %}
 
-<a href="{{ url_for('index') }}">Salir</a>
-
+  <a href="{{ url_for('index') }}">Salir</a>
+</div>
 {% endblock %}

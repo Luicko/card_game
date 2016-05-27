@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container">
+  <div class="page-header">
+  	<h3>Here are the games available at the moment:</h3>
+  </div>
+  {% for game in game_list %}
+      <a href="{{ url_for('game_room', game_name=game.game_name) }}">{{ game.game_name }}</a> <br>
+  {% endfor %}
+  <a href="{{ url_for('create_room') }}"><input type='button' value='Create Room'/></a>
 
-<h3>Here are the games available at the moment:</h3>
-{% for game in game_list %}
-    <a href="{{ url_for('game_room', game_name=game.game_name) }}">{{ game.game_name }}</a> <br>
-{% endfor %}
-<a href="{{ url_for('create_room') }}"><input type='button' value='Create Room'/></a>
-
-<a href="{{ url_for('index') }}">Back</a>
+  <a href="{{ url_for('index') }}">Back</a>
+</div>
 {% endblock %}

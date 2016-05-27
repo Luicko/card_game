@@ -32,6 +32,7 @@ from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mysql import MySQL
 from flask.ext.socketio import SocketIO
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('card_game.settings')
@@ -42,6 +43,7 @@ lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 
+Bootstrap(app)
 db = SQLAlchemy(app)
 
 from . import models, views, settings

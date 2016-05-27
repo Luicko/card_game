@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-<table border="2px">
-  <tr>
-    <td>User</td>
-    <td>Score</td>
-  </tr>
-  {% for player in players %}
+<div class="container">
+  <table class=table>
     <tr>
-      <td>{{ player.username }}</td>
-      <td>{{ player.score }}</td>
+      <td>User</td>
+      <td>Score</td>
     </tr>
-  {% endfor %}
-</table>
+    {% for player in players %}
+      <tr>
+        <td>{{ player.username }}</td>
+        <td>{{ player.score }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

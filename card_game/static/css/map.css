@@ -1,0 +1,43 @@
+<style>
+
+.map{
+	margin-left: 10%
+}
+
+ul.notes li {
+  list-style: none;
+  display: none;
+  position: absolute;
+  border: medium solid black;
+  background: url("esta_imagen_no_existe");
+}
+div.map:hover ul.notes li {
+  display: block;
+}
+ul.notes li p {
+  margin: 10px 0 0 0;
+  padding: .3em;
+  display: none;
+  background: #FFF;
+  opacity: 0.95;
+  position: absolute;
+  top: 100%;
+}
+ul.notes li:hover p {
+  display: block;
+
+}
+ 
+ul.notes li#note4 {
+  width: 140px; height: 340px; top: 100px; left: 100px;
+}
+ul.notes li#note2 {
+  width: 182px; height: 90px; top: 106px; left: 268px;
+}
+ul.notes li#note3 {
+  width: 120px; height: 23px; top: 300px; left: 256px;
+}
+ul.notes li#note5 {
+  width: 180px; height: 34px; top: 230px; left: 950px;
+}
+</style>

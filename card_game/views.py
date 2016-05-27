@@ -25,7 +25,7 @@ def before_request():
 
 def broadcast_turn(game_name):
     """
-    Broadcast message to notify the players whos turn is
+    Broadcast message to notify the players whose turn is
     :param game_name: the name of the game in the database
     """
     time.sleep(3)

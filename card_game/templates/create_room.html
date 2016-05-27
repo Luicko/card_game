@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Create Room</h3>
-<form action='' method='post'>
-{{ form.hidden_tag() }}
-    Game Name: {{ form.game_name }}
-    <input type="submit" value="Create" >
-</form>
+<div class="container">
+  <div class="page-header">
+  	<h3>Create Room</h3>
+  </div>
+  <form action='' method='post'>
+  {{ form.hidden_tag() }}
+      Game Name: {{ form.game_name }}
+      <input type="submit" value="Create" >
+  </form>
 
-<a href="{{ url_for('index') }}">Exit</a>
-
+  <a href="{{ url_for('index') }}">Exit</a>
+</div>
 {% endblock %}
